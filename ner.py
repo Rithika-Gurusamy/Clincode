@@ -7,12 +7,6 @@ ner = pipeline(
     aggregation_strategy="simple"
 )
 
-text = """
-The patient was diagnosed with pneumonia.
-The patient also has diabetes.
-"""
-
-results = ner(text)
 
 text = """
 Patient is a 45-year-old female with a history of
@@ -29,6 +23,19 @@ ceftriaxone and azithromycin.
 
 results = ner(text)
 
-print("Raw model output:")
-print(results)
-print("Number of entities:", len(results))
+
+for entity in results:
+    start = entity.get("start")
+    end = entity.get("end")
+
+    original_text = (
+        text[start:end]
+        if start is not None and end is not None
+        else entity.get("word", "")
+    )
+
+    print(f"Original evidence : {original_text!r}")
+    print(f"Model prediction  : {entity.get('word')!r}")
+    print(f"Entity label      : {entity.get('entity_group')}")
+    print(f"Model score       : {float(entity.get('score', 0)):.3f}")
+    print("-" * 45)
